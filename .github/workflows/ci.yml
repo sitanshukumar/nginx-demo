@@ -63,6 +63,8 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest \
             ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
+      
+
       # Push to ACR
       - name: Push Docker Image
         run: |
@@ -76,7 +78,29 @@ jobs:
       - name: Clone GitOps Repository
         run: |
           git clone https://x-access-token:${{ secrets.GITOPS_TOKEN }}@github.com/${{ secrets.GITOPS_REPO }}.git gitops
+      - name: Cleanup ACR (keep latest)
+        run: |
+          REPO=nginx-demo
 
+          TAGS=$(az acr repository show-tags \
+            --name ${{ secrets.ACR_NAME }} \
+            --repository $REPO \
+            --orderby time_desc \
+            --output tsv)
+
+          KEEP=$(echo "$TAGS" | head -n1)
+
+          echo "Keeping: $KEEP"
+
+          echo "$TAGS" | tail -n +2 | while read TAG
+          do
+            echo "Deleting $TAG"
+
+            az acr repository delete \
+              --name ${{ secrets.ACR_NAME }} \
+              --image ${REPO}:$TAG \
+              --yes || true
+          done
       # Install yq
       - name: Install yq
         run: |
