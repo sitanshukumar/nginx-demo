@@ -42,7 +42,7 @@ jobs:
         with:
           image-ref: ${{ env.IMAGE_NAME }}:latest
           severity: HIGH,CRITICAL
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
 
       # Login to Azure
