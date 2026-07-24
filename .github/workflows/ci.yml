@@ -100,7 +100,7 @@ jobs:
         run: |
           cd gitops
 
-          git config user.name "sitanshu
+          git config user.name "sitanshu"
           git config user.email "sitanshukumar1988@gmail.com"
 
           git add nginx/values.yaml
